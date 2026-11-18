@@ -44,7 +44,7 @@ const req=()=>{if(!raf)raf=requestAnimationFrame(run)};addEventListener('scroll'
 (function(){const $=i=>document.getElementById(i);if(!$('refer'))return;
 const tabs=[['rt1','rp1'],['rt2','rp2']];tabs.forEach(([t,p])=>$(t).onclick=()=>tabs.forEach(([t2,p2])=>{const on=t2===t;$(t2).setAttribute('aria-selected',on);$(p2).hidden=!on}));
 const upd=()=>{const n=($('rname').value.trim()||'you').toLowerCase().replace(/[^a-z0-9äöüß-]+/g,'-').replace(/^-|-$/g,'')||'you';const link='juicylemons.de/'+($('refer').dataset.path||'candidates')+'?ref='+n;$('rlink').textContent=link;
-$('rwa').href='https://wa.me/?text='+encodeURIComponent(($('refer').dataset.path==='clients'?"Hey! If you're hiring tech or SaaS talent, JuicyLemons is fast and personal. Have a look: https://":"Hey! JuicyLemons helps tech & SaaS people find great next roles, personally and fast. Have a look: https://")+link)};
+$('rwa').href='https://wa.me/?text='+encodeURIComponent(($('refer').dataset.path==='clients'?"Hey! If you're hiring tech or SaaS talent, JuicyLemons is fast and personal. Have a look: https://":$('refer').dataset.path==='recruiters'?"Hey! You'd fit the JuicyLemons freelance recruiter network – great clients, real partnership. Have a look: https://":"Hey! JuicyLemons helps tech & SaaS people find great next roles, personally and fast. Have a look: https://")+link)};
 $('rname').addEventListener('input',upd);upd();
 $('rcopy').onclick=async()=>{const t='https://'+$('rlink').textContent;try{await navigator.clipboard.writeText(t);$('rcopy').textContent='Copied!'}catch(e){const r=document.createRange();r.selectNodeContents($('rlink'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('rcopy').textContent='Selected'}setTimeout(()=>$('rcopy').textContent='Copy',1800)};
 $('rp2').addEventListener('submit',e=>{e.preventDefault();const em=$('rye');if(!em.value.includes('@')){em.focus();return}if(!$('rf').value.trim()){$('rf').focus();return}if(!$('rok').checked){$('rok').focus();return}$('rdone').hidden=false});})();
@@ -133,18 +133,19 @@ function tick(now){requestAnimationFrame(tick);if(!vis||document.hidden){t0=now-
 setTimeout(start,2600);})();
 // ---- Sign-ups -> Maria's Notion (via a Make.com webhook) ----
 // Paste the Make webhook URL between the quotes. Empty = forms work as before, nothing is sent.
-const JL_HOOK='';
+const JL_HOOK='https://hook.eu1.make.com/cgnfl1z1bj3eat2zhj1safayfr6bwff6';
 (function(){if(!JL_HOOK)return;
+document.querySelectorAll('form').forEach(f=>{const h=document.createElement('input');h.type='text';h.name='jl_website';h.tabIndex=-1;h.autocomplete='off';h.setAttribute('aria-hidden','true');h.className='jl-hp';f.appendChild(h)});
 const page=(location.pathname.split('/').pop()||'index.html').replace('.html','')||'index';
 const okOf=f=>f.id==='nlf'?document.getElementById('nlok'):f.id==='popf'?document.getElementById('popok'):f.id==='rp2'?document.getElementById('rdone'):f.querySelector('.ok');
 const typeOf=f=>{if(f.id==='nlf'||f.id==='popf')return 'Newsletter';
- if(f.id==='rp2')return 'Referral ('+((document.getElementById('refer')||{}).dataset||{}).path+')';
+ if(f.id==='rp2')return {clients:'Referral – Company',candidates:'Referral – Candidate',recruiters:'Referral – Freelance recruiter'}[((document.getElementById('refer')||{}).dataset||{}).path]||'Referral';
  if(page==='index'){const w=f.querySelector('input[name=who]:checked');return w?({client:'Company enquiry',candidate:'Candidate sign-up',freelance:'Freelance recruiter application'}[w.value]||w.value):'Contact'}
  return {clients:'Company enquiry',process:'Company enquiry',candidates:'Candidate sign-up',recruiters:'Freelance recruiter application'}[page]||'Contact'};
 const labelOf=el=>{const l=el.id&&document.querySelector('label[for="'+el.id+'"]')||el.closest('label');let t=l?l.textContent:(el.placeholder||el.name||el.id);return t.replace(/\s+/g,' ').trim().slice(0,60)};
-document.addEventListener('submit',e=>{const f=e.target;if(!f.matches('form'))return;setTimeout(()=>{const ok=okOf(f);if(!ok||ok.hidden)return;
+document.addEventListener('submit',e=>{const f=e.target;if(!f.matches('form'))return;const hp=f.querySelector('.jl-hp');if(hp&&hp.value)return;setTimeout(()=>{const ok=okOf(f);if(!ok||ok.hidden)return;
  const d={Type:typeOf(f),Page:page,Submitted:new Date().toISOString()};
- f.querySelectorAll('input,select,textarea').forEach(el=>{if(el.type==='checkbox'||el.type==='radio'||el.type==='submit'||el.type==='hidden'||el.closest('[hidden]'))return;const v=(el.value||'').trim();if(v)d[labelOf(el)]=v});
+ f.querySelectorAll('input,select,textarea').forEach(el=>{if(el.classList.contains('jl-hp')||el.type==='checkbox'||el.type==='radio'||el.type==='submit'||el.type==='hidden'||el.closest('[hidden]'))return;const v=(el.value||'').trim();if(v)d[labelOf(el)]=v});
  const em=f.querySelector('input[type=email]');if(em&&em.value)d.Email=em.value.trim();
  d.Name=d.Name||d['Your name']||d['Full name']||d.Email||'';
  d.Details=Object.entries(d).filter(([k])=>!['Type','Page','Submitted','Details'].includes(k)).map(([k,v])=>k+': '+v).join('\n');

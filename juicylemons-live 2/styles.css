@@ -793,3 +793,5 @@ body:not(.menu-open) .topbar.scrolled .tb-menu{background:#ffe62e;color:#e3006e}
 .wa-seg .t0{font-size:10.5px;font-weight:700;letter-spacing:.2em;opacity:.85}
 
 .wa-seg .t2.t1b,.wa-seg tspan[class~="t1b"]{font-weight:700;font-size:15px;opacity:1}
+
+.jl-hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0;pointer-events:none}
